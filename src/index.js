@@ -1,6 +1,7 @@
 import axios from "axios";
 import Notiflix from "notiflix";
 import SimpleLightbox from "simplelightbox";
+import InfiniteScroll from "infinite-scroll";
 import { getPictures, resetPage, valuePage } from "./js/getPictures";
 import { createPicturesCards } from "./js/createPicturesCards";
 import { smooshScroll } from "./js/smooshScroll";
@@ -15,7 +16,8 @@ const refs = {
     button: document.querySelector('button'),
     wrap: document.querySelector('.wrap-form'),
     gallery: document.querySelector('.gallery'),
-    loadMoreBtn: document.querySelector('.load-more')
+    loadMoreBtn: document.querySelector('.load-more'),
+    linkImages: document.querySelectorAll('a')
 }
 refs.wrap.style.backgroundColor = 'blue';
 refs.form.style.display = 'flex';
@@ -57,10 +59,20 @@ refs.form.addEventListener('submit', (evnt) => {
             );
             refs.loadMoreBtn.style.display = 'flex';
         }
-        
     });
 })
 
+
+// window.addEventListener('scroll', () => {
+//     console.log(window.innerHeight);
+//     if (window.scrollY + window.innerHeight > document.documentElement.scrollHeight) {
+//         getPictures(searchPictureToTrim).then(data => {
+//             refs.gallery.insertAdjacentHTML('beforeend',
+//                 createPicturesCards(data.data.hits)
+//             )
+//         });
+//     }
+// });
 
 refs.loadMoreBtn.addEventListener('click', () => {
     refs.loadMoreBtn.style.display = 'none';
@@ -79,9 +91,11 @@ refs.loadMoreBtn.addEventListener('click', () => {
         refs.loadMoreBtn.style.display = 'flex';
     });
 });
+refs.gallery.addEventListener('click', (e) => {
+    e.preventDefault();
+})
 
-
-new SimpleLightbox('.gallery a');
+let gallery1 = new SimpleLightbox('.gallery a', {close: true, overlayOpacity: 0.9});
 
 
 
