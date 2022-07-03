@@ -6,7 +6,11 @@ let page = DEFAULT_PAGE;
 export const resetPage = () => {
     page = DEFAULT_PAGE
 }
-
+export const valuePage = () => {
+    return {
+        page: page
+    }
+}
 export async function getPictures(searchPicture) {
 
     const searchParams = new URLSearchParams({

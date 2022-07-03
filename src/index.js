@@ -1,12 +1,11 @@
 import axios from "axios";
 import Notiflix from "notiflix";
 import SimpleLightbox from "simplelightbox";
-// import { modernStyleElem } from "./js/modernStyleElem";
-// import { getPictures } from "./js/getPictures";
-import "simplelightbox/dist/simple-lightbox.min.css";
-import { getPictures, resetPage } from "./js/getPictures";
+import { getPictures, resetPage, valuePage } from "./js/getPictures";
 import { createPicturesCards } from "./js/createPicturesCards";
-// import { page } from "./js/getPictures";
+import { smooshScroll } from "./js/smooshScroll";
+import "simplelightbox/dist/simple-lightbox.min.css";
+
 
 axios.defaults.baseURL = 'https://pixabay.com/api/';
 
@@ -18,9 +17,6 @@ const refs = {
     gallery: document.querySelector('.gallery'),
     loadMoreBtn: document.querySelector('.load-more')
 }
-
-// modernStyleElem();
-
 refs.wrap.style.backgroundColor = 'blue';
 refs.form.style.display = 'flex';
 refs.form.style.justifyContent = 'center';
@@ -30,66 +26,62 @@ refs.button.borderLeft = 'none';
 
 refs.loadMoreBtn.style.display = 'none';
 
+// let gallery = new SimpleLightbox('.gallery a');
+// console.log(gallery);
+
 
 let searchPictureToTrim = '';
 
-
 refs.form.addEventListener('submit', (evnt) => {
     evnt.preventDefault();
-
+    
     const searchPicture = evnt.target.elements.searchQuery.value;
     searchPictureToTrim = searchPicture.trim();
 
-    console.log(searchPictureToTrim);
+    // console.log(searchPictureToTrim);
     
-
-    //  else if (data.hits.length === 0) {
-    //     refs.gallery.innerHTML = '';
-    //     Notiflix.Notify.info(
-    //         'Sorry, there are no images matching your search query. Please try again.'
-    //     );
-    // }
     resetPage();
     
     getPictures(searchPictureToTrim).then(data => {
-        if (searchPictureToTrim === '') {
-            refs.gallery.innerHTML = '';
-            Notiflix.Notify.info(
+        
+        if (searchPictureToTrim === '' || data.data.hits.length === 0) {
+            refs.gallery.innerHTML = ' ';
+            refs.loadMoreBtn.style.display = 'none';
+            Notiflix.Notify.failure(
                 'Sorry, there are no images matching your search query. Please try again.'
             );
-        } else if (data.data.hits.length === 0) {
-            refs.gallery.innerHTML = '';
+        } else {
+            refs.gallery.innerHTML = createPicturesCards(data.data.hits);
             Notiflix.Notify.info(
-                'Sorry, there are no images matching your search query. Please try again.'
+                `Hooray! We found ${data.data.totalHits} images.`
             );
+            refs.loadMoreBtn.style.display = 'flex';
         }
-
-        refs.gallery.innerHTML = createPicturesCards(data.data.hits);
-        refs.loadMoreBtn.style.display = 'flex';
-        console.log('totalHits: ', data.data.totalHits);
-        // console.log('page: ', page);
+        
     });
 })
 
 
 refs.loadMoreBtn.addEventListener('click', () => {
-    // page += 1;
     refs.loadMoreBtn.style.display = 'none';
     getPictures(searchPictureToTrim).then(data => {
-
-        if (data.data.totalHits === page) {
-            
+        if (data.data.totalHits === valuePage().page - 1) {
+            refs.loadMoreBtn.style.display = 'none';
+            Notiflix.Notify.warning(
+                `We're sorry, but you've reached the end of search results.`
+            );
         }
 
         refs.gallery.insertAdjacentHTML('beforeend',
             createPicturesCards(data.data.hits)
         )
+        smooshScroll();
         refs.loadMoreBtn.style.display = 'flex';
     });
 });
 
-// if (page === data.total_pages) {
-//     Notiflix.Notify.info(
-//         'Sorry, bud pictures is finished'
-//     );
-// }
+
+new SimpleLightbox('.gallery a');
+
+
+
