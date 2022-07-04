@@ -34,6 +34,14 @@ refs.loadMoreBtn.style.display = 'none';
 
 let searchPictureToTrim = '';
 
+const options = {
+
+    rootMargin: '200px',
+    threshold: 1.0,
+};
+
+let count = 1;
+
 refs.form.addEventListener('submit', (evnt) => {
     evnt.preventDefault();
     
@@ -48,7 +56,7 @@ refs.form.addEventListener('submit', (evnt) => {
         
         if (searchPictureToTrim === '' || data.data.hits.length === 0) {
             refs.gallery.innerHTML = ' ';
-            refs.loadMoreBtn.style.display = 'none';
+            // refs.loadMoreBtn.style.display = 'none';
             Notiflix.Notify.failure(
                 'Sorry, there are no images matching your search query. Please try again.'
             );
@@ -57,45 +65,58 @@ refs.form.addEventListener('submit', (evnt) => {
             Notiflix.Notify.info(
                 `Hooray! We found ${data.data.totalHits} images.`
             );
-            refs.loadMoreBtn.style.display = 'flex';
+            // refs.loadMoreBtn.style.display = 'flex';
         }
     });
+    const observer = new IntersectionObserver(entries => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                setTimeout(() => {
+                    console.log(".....INTERSETING......");
+                    getPictures(searchPictureToTrim).then(data => {
+                    if (data.data.totalHits === valuePage().page - 1) {
+                        refs.loadMoreBtn.style.display = 'none';
+                        Notiflix.Notify.warning(
+                            `We're sorry, but you've reached the end of search results.`
+                        );
+                    }
+                    refs.gallery.insertAdjacentHTML('beforeend',
+                        createPicturesCards(data.data.hits)
+                    )
+                });
+                }, 200);
+            }
+        })
+    }, options);
+    observer.observe(document.querySelector('.scroll-guard'));
 })
 
+new SimpleLightbox('.gallery a', {close: true, overlayOpacity: 0.9});
 
-// window.addEventListener('scroll', () => {
-//     console.log(window.innerHeight);
-//     if (window.scrollY + window.innerHeight > document.documentElement.scrollHeight) {
-//         getPictures(searchPictureToTrim).then(data => {
-//             refs.gallery.insertAdjacentHTML('beforeend',
-//                 createPicturesCards(data.data.hits)
-//             )
-//         });
-//     }
+
+
+// refs.loadMoreBtn.addEventListener('click', () => {
+//     refs.loadMoreBtn.style.display = 'none';
+//     getPictures(searchPictureToTrim).then(data => {
+//         if (data.data.totalHits === valuePage().page - 1) {
+//             refs.loadMoreBtn.style.display = 'none';
+//             Notiflix.Notify.warning(
+//                 `We're sorry, but you've reached the end of search results.`
+//             );
+//         }
+
+//         refs.gallery.insertAdjacentHTML('beforeend',
+//             createPicturesCards(data.data.hits)
+//         )
+//         smooshScroll();
+//         refs.loadMoreBtn.style.display = 'flex';
+//     });
 // });
-
-refs.loadMoreBtn.addEventListener('click', () => {
-    refs.loadMoreBtn.style.display = 'none';
-    getPictures(searchPictureToTrim).then(data => {
-        if (data.data.totalHits === valuePage().page - 1) {
-            refs.loadMoreBtn.style.display = 'none';
-            Notiflix.Notify.warning(
-                `We're sorry, but you've reached the end of search results.`
-            );
-        }
-
-        refs.gallery.insertAdjacentHTML('beforeend',
-            createPicturesCards(data.data.hits)
-        )
-        smooshScroll();
-        refs.loadMoreBtn.style.display = 'flex';
-    });
-});
 refs.gallery.addEventListener('click', (e) => {
     e.preventDefault();
 })
 
-let gallery1 = new SimpleLightbox('.gallery a', {close: true, overlayOpacity: 0.9});
+
 
 
 
