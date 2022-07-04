@@ -35,7 +35,6 @@ refs.loadMoreBtn.style.display = 'none';
 let searchPictureToTrim = '';
 
 const options = {
-
     rootMargin: '200px',
     threshold: 1.0,
 };
@@ -53,7 +52,6 @@ refs.form.addEventListener('submit', (evnt) => {
     resetPage();
     
     getPictures(searchPictureToTrim).then(data => {
-        
         if (searchPictureToTrim === '' || data.data.hits.length === 0) {
             refs.gallery.innerHTML = ' ';
             // refs.loadMoreBtn.style.display = 'none';
@@ -65,34 +63,49 @@ refs.form.addEventListener('submit', (evnt) => {
             Notiflix.Notify.info(
                 `Hooray! We found ${data.data.totalHits} images.`
             );
+
             // refs.loadMoreBtn.style.display = 'flex';
+            setTimeout(() => {
+                
+                
+                const observer = new IntersectionObserver(entries => {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting && refs.gallery !== "") {
+                            console.log(data.data.totalHits);
+                            console.log(refs.gallery.elements);
+                            if (!data.data.totalHits) {
+                                Notiflix.Notify.warning(
+                                    `We're sorry, but you've reached the end of search results.`
+                                );
+                            } else { 
+                                console.log(".....INTERSECTING......");
+                                getPictures(searchPictureToTrim).then(data => {
+                                    refs.gallery.insertAdjacentHTML('beforeend',
+                                        createPicturesCards(data.data.hits)
+                                    )
+                                });
+                            }
+                        }           
+                    })
+                }, options);
+                observer.observe(document.querySelector('.scroll-guard'));
+            }, 200);
+
+            
         }
+
     });
-    const observer = new IntersectionObserver(entries => {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                setTimeout(() => {
-                    console.log(".....INTERSETING......");
-                    getPictures(searchPictureToTrim).then(data => {
-                    if (data.data.totalHits === valuePage().page - 1) {
-                        refs.loadMoreBtn.style.display = 'none';
-                        Notiflix.Notify.warning(
-                            `We're sorry, but you've reached the end of search results.`
-                        );
-                    }
-                    refs.gallery.insertAdjacentHTML('beforeend',
-                        createPicturesCards(data.data.hits)
-                    )
-                });
-                }, 200);
-            }
-        })
-    }, options);
-    observer.observe(document.querySelector('.scroll-guard'));
+    
 })
 
 new SimpleLightbox('.gallery a', {close: true, overlayOpacity: 0.9});
 
+                    // if (data.data.totalHits === valuePage().page - 1) {
+                    //     refs.loadMoreBtn.style.display = 'none';
+                    //     Notiflix.Notify.warning(
+                    //         `We're sorry, but you've reached the end of search results.`
+                    //     );
+                    // }
 
 
 // refs.loadMoreBtn.addEventListener('click', () => {
