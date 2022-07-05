@@ -71,14 +71,12 @@ refs.form.addEventListener('submit', (evnt) => {
                 const observer = new IntersectionObserver(entries => {
                     entries.forEach(entry => {
                         if (entry.isIntersecting && refs.gallery !== "") {
-                            console.log(data.data.totalHits);
-                            console.log(refs.gallery.elements);
-                            if (!data.data.totalHits) {
+                            if (refs.gallery.children.length === data.data.totalHits) {
                                 Notiflix.Notify.warning(
                                     `We're sorry, but you've reached the end of search results.`
                                 );
+                                refs.gallery.insertAdjacentHTML('beforeend', "We're sorry, but you've reached the end of search results.")
                             } else { 
-                                console.log(".....INTERSECTING......");
                                 getPictures(searchPictureToTrim).then(data => {
                                     refs.gallery.insertAdjacentHTML('beforeend',
                                         createPicturesCards(data.data.hits)
@@ -126,9 +124,7 @@ refs.form.addEventListener('submit', (evnt) => {
 //         refs.loadMoreBtn.style.display = 'flex';
 //     });
 // });
-refs.gallery.addEventListener('click', (e) => {
-    e.preventDefault();
-})
+
 
 
 
