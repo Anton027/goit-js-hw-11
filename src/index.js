@@ -91,14 +91,15 @@ refs.form.addEventListener('submit', (evnt) => {
                 observer.observe(document.querySelector('.scroll-guard'));
             }, 200);
 
-            
+            let lightbox = new SimpleLightbox('.photo-card a', { close: true, overlayOpacity: 0.9 });
+            lightbox.refresh();
         }
 
     });
     
 })
 
-new SimpleLightbox('.gallery a', {close: true, overlayOpacity: 0.9});
+
 
                     // if (data.data.totalHits === valuePage().page - 1) {
                     //     refs.loadMoreBtn.style.display = 'none';
