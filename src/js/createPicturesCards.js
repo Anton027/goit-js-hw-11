@@ -1,6 +1,6 @@
+
 export function createPicturesCards(pictures) {
     return pictures.map(picture => `
-            <div class="photo-card">
                 <a href="${picture.largeImageURL}" class="thumb">
                     <img src="${picture.webformatURL}" alt="${picture.tags}" loading="lazy"/>
                     <div class="info">
@@ -17,7 +17,8 @@ export function createPicturesCards(pictures) {
                         <b>Downloads: ${picture.downloads}</b>
                         </p>
                     </div>
-                </a>
-            </div>`
+                </a>`
     ).join('');
+
+
 }

@@ -50,8 +50,9 @@ refs.form.addEventListener('submit', (evnt) => {
     // console.log(searchPictureToTrim);
     
     resetPage();
-    
+
     getPictures(searchPictureToTrim).then(data => {
+
         if (searchPictureToTrim === '' || data.data.hits.length === 0) {
             refs.gallery.innerHTML = ' ';
             // refs.loadMoreBtn.style.display = 'none';
@@ -60,6 +61,7 @@ refs.form.addEventListener('submit', (evnt) => {
             );
         } else {
             refs.gallery.innerHTML = createPicturesCards(data.data.hits);
+
             Notiflix.Notify.info(
                 `Hooray! We found ${data.data.totalHits} images.`
             );
@@ -76,11 +78,12 @@ refs.form.addEventListener('submit', (evnt) => {
                                     `We're sorry, but you've reached the end of search results.`
                                 );
                                 refs.gallery.insertAdjacentHTML('beforeend', "We're sorry, but you've reached the end of search results.")
-                            } else { 
+                            } else {
                                 getPictures(searchPictureToTrim).then(data => {
                                     refs.gallery.insertAdjacentHTML('beforeend',
                                         createPicturesCards(data.data.hits)
                                     )
+                                    new SimpleLightbox('.gallery a', { close: true, overlayOpacity: 0.9 });
                                 });
                             }
                         }           
@@ -88,13 +91,12 @@ refs.form.addEventListener('submit', (evnt) => {
                 }, options);
                 observer.observe(document.querySelector('.scroll-guard'));
             }, 200);
-
-            let lightbox = new SimpleLightbox('.photo-card a', { close: true, overlayOpacity: 0.9 });
-            lightbox.refresh();
+            let lightbox = new SimpleLightbox('.gallery a', { close: true, overlayOpacity: 0.9 });
+                lightbox.refresh();
+                console.log(lightbox);
         }
-
+        
     });
-    
 })
 
 
